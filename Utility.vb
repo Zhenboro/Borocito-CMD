@@ -7,21 +7,28 @@ Module GlobalUses
     Public parameters As String
     Public DIRCommons As String = "C:\Users\" & Environment.UserName & "\AppData\Local\Microsoft\Borocito\Control"
     Public DIRTemp As String = "C:\Users\" & Environment.UserName & "\AppData\Local\Temp"
+
+    Public AssemblyInformation As String = "Borocito-CMD " & My.Application.Info.Version.ToString & " (" & Application.ProductVersion & ")"
+
     Public HttpOwnerServer As String
     Public HostOwnerServer As String
     Public HostOwnerServerUser As String
     Public HostOwnerServerPassword As String
+
     Public userTarget As String
     Public userIDTarget As String
+
     Public regKey As RegistryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Borocito\\Control", True)
+
     Public OwnerServer As String
     Public isThemeActive As Boolean = False
     Public isPortable As Boolean = False
     Public CommandRefreshDelay As Integer = 10000
     Public isMultiSelectMode As Boolean = False
+
     Public compileVersion As String = My.Application.Info.Version.ToString &
     " (" & Application.ProductVersion & ") " &
-    "[22/04/2023 12:18]" 'Indicacion exacta de la ultima compilacion
+    "[18/08/2026 19:45]" 'Indicacion exacta de la ultima compilacion
 End Module
 Module Utility
     Function AddToLog(ByVal from As String, ByVal content As String, Optional ByVal flag As Boolean = False) As String
