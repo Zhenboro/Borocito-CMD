@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class Main
     Inherits System.Windows.Forms.Form
 
     'Form reemplaza a Dispose para limpiar la lista de componentes.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class Main
     'NOTA: el Diseñador de Windows Forms necesita el siguiente procedimiento
     'Se puede modificar usando el Diseñador de Windows Forms.  
     'No lo modifique con el editor de código.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Main))
@@ -46,12 +46,13 @@ Partial Class Main
         Me.Main_Users_User_TabPage = New System.Windows.Forms.TabPage()
         Me.Main_Users_User_Label = New System.Windows.Forms.Label()
         Me.Main_Users_User_GroupBox = New System.Windows.Forms.GroupBox()
-        Me.Main_Users_User_RichTextBox = New System.Windows.Forms.RichTextBox()
+        Me.SplitContainer2 = New System.Windows.Forms.SplitContainer()
         Me.Main_Users_User_ListBox = New System.Windows.Forms.ListBox()
         Me.ContextMenuStripUsers_User_ListBox1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.EliminarToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripSeparator()
         Me.RecargarToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.Main_Users_User_RichTextBox = New System.Windows.Forms.RichTextBox()
         Me.Main_Users_Command_TabPage = New System.Windows.Forms.TabPage()
         Me.Main_Users_Command_GroupBox = New System.Windows.Forms.GroupBox()
         Me.Main_Users_Command_ComboBox = New System.Windows.Forms.ComboBox()
@@ -61,10 +62,10 @@ Partial Class Main
         Me.Main_Telemetry_TabPage = New System.Windows.Forms.TabPage()
         Me.Main_Telemetry_TabControl = New System.Windows.Forms.TabControl()
         Me.Main_Telemetry_Telemetry_TabPage = New System.Windows.Forms.TabPage()
+        Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.Main_Telemetry_Telemetry_ListBox = New System.Windows.Forms.ListBox()
         Me.Main_Telemetry_Telemetry_RichTextBox = New System.Windows.Forms.RichTextBox()
         Me.Main_Telemetry_Files_TabPage = New System.Windows.Forms.TabPage()
-        Me.Main_Telemetry_Files_CheckBox = New System.Windows.Forms.CheckBox()
         Me.Main_Telemetry_Files_ListBox = New System.Windows.Forms.ListBox()
         Me.ContextMenuStripTelemetry_Files_ListBox1 = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.RecargarToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
@@ -106,12 +107,20 @@ Partial Class Main
         Me.Main_Users_TabControl.SuspendLayout()
         Me.Main_Users_User_TabPage.SuspendLayout()
         Me.Main_Users_User_GroupBox.SuspendLayout()
+        CType(Me.SplitContainer2, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer2.Panel1.SuspendLayout()
+        Me.SplitContainer2.Panel2.SuspendLayout()
+        Me.SplitContainer2.SuspendLayout()
         Me.ContextMenuStripUsers_User_ListBox1.SuspendLayout()
         Me.Main_Users_Command_TabPage.SuspendLayout()
         Me.Main_Users_Command_GroupBox.SuspendLayout()
         Me.Main_Telemetry_TabPage.SuspendLayout()
         Me.Main_Telemetry_TabControl.SuspendLayout()
         Me.Main_Telemetry_Telemetry_TabPage.SuspendLayout()
+        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer1.Panel1.SuspendLayout()
+        Me.SplitContainer1.Panel2.SuspendLayout()
+        Me.SplitContainer1.SuspendLayout()
         Me.Main_Telemetry_Files_TabPage.SuspendLayout()
         Me.ContextMenuStripTelemetry_Files_ListBox1.SuspendLayout()
         Me.Main_Inject_TabPage.SuspendLayout()
@@ -377,34 +386,38 @@ Partial Class Main
         Me.Main_Users_User_GroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.Main_Users_User_GroupBox.Controls.Add(Me.Main_Users_User_RichTextBox)
-        Me.Main_Users_User_GroupBox.Controls.Add(Me.Main_Users_User_ListBox)
+        Me.Main_Users_User_GroupBox.Controls.Add(Me.SplitContainer2)
         Me.Main_Users_User_GroupBox.Location = New System.Drawing.Point(6, 28)
         Me.Main_Users_User_GroupBox.Name = "Main_Users_User_GroupBox"
         Me.Main_Users_User_GroupBox.Size = New System.Drawing.Size(735, 222)
         Me.Main_Users_User_GroupBox.TabIndex = 1
         Me.Main_Users_User_GroupBox.TabStop = False
         '
-        'Main_Users_User_RichTextBox
+        'SplitContainer2
         '
-        Me.Main_Users_User_RichTextBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.Main_Users_User_RichTextBox.Location = New System.Drawing.Point(173, 19)
-        Me.Main_Users_User_RichTextBox.Name = "Main_Users_User_RichTextBox"
-        Me.Main_Users_User_RichTextBox.Size = New System.Drawing.Size(556, 197)
-        Me.Main_Users_User_RichTextBox.TabIndex = 3
-        Me.Main_Users_User_RichTextBox.Text = ""
+        Me.SplitContainer2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer2.Location = New System.Drawing.Point(3, 16)
+        Me.SplitContainer2.Name = "SplitContainer2"
+        '
+        'SplitContainer2.Panel1
+        '
+        Me.SplitContainer2.Panel1.Controls.Add(Me.Main_Users_User_ListBox)
+        '
+        'SplitContainer2.Panel2
+        '
+        Me.SplitContainer2.Panel2.Controls.Add(Me.Main_Users_User_RichTextBox)
+        Me.SplitContainer2.Size = New System.Drawing.Size(729, 203)
+        Me.SplitContainer2.SplitterDistance = 150
+        Me.SplitContainer2.TabIndex = 4
         '
         'Main_Users_User_ListBox
         '
-        Me.Main_Users_User_ListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.Main_Users_User_ListBox.ContextMenuStrip = Me.ContextMenuStripUsers_User_ListBox1
+        Me.Main_Users_User_ListBox.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Main_Users_User_ListBox.FormattingEnabled = True
-        Me.Main_Users_User_ListBox.Location = New System.Drawing.Point(6, 19)
+        Me.Main_Users_User_ListBox.Location = New System.Drawing.Point(0, 0)
         Me.Main_Users_User_ListBox.Name = "Main_Users_User_ListBox"
-        Me.Main_Users_User_ListBox.Size = New System.Drawing.Size(161, 186)
+        Me.Main_Users_User_ListBox.Size = New System.Drawing.Size(150, 203)
         Me.Main_Users_User_ListBox.TabIndex = 2
         '
         'ContextMenuStripUsers_User_ListBox1
@@ -429,6 +442,15 @@ Partial Class Main
         Me.RecargarToolStripMenuItem1.Name = "RecargarToolStripMenuItem1"
         Me.RecargarToolStripMenuItem1.Size = New System.Drawing.Size(120, 22)
         Me.RecargarToolStripMenuItem1.Text = "Recargar"
+        '
+        'Main_Users_User_RichTextBox
+        '
+        Me.Main_Users_User_RichTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Main_Users_User_RichTextBox.Location = New System.Drawing.Point(0, 0)
+        Me.Main_Users_User_RichTextBox.Name = "Main_Users_User_RichTextBox"
+        Me.Main_Users_User_RichTextBox.Size = New System.Drawing.Size(575, 203)
+        Me.Main_Users_User_RichTextBox.TabIndex = 3
+        Me.Main_Users_User_RichTextBox.Text = ""
         '
         'Main_Users_Command_TabPage
         '
@@ -521,8 +543,7 @@ Partial Class Main
         '
         'Main_Telemetry_Telemetry_TabPage
         '
-        Me.Main_Telemetry_Telemetry_TabPage.Controls.Add(Me.Main_Telemetry_Telemetry_ListBox)
-        Me.Main_Telemetry_Telemetry_TabPage.Controls.Add(Me.Main_Telemetry_Telemetry_RichTextBox)
+        Me.Main_Telemetry_Telemetry_TabPage.Controls.Add(Me.SplitContainer1)
         Me.Main_Telemetry_Telemetry_TabPage.Location = New System.Drawing.Point(4, 22)
         Me.Main_Telemetry_Telemetry_TabPage.Name = "Main_Telemetry_Telemetry_TabPage"
         Me.Main_Telemetry_Telemetry_TabPage.Padding = New System.Windows.Forms.Padding(3)
@@ -531,30 +552,43 @@ Partial Class Main
         Me.Main_Telemetry_Telemetry_TabPage.Text = "Telemetria"
         Me.Main_Telemetry_Telemetry_TabPage.UseVisualStyleBackColor = True
         '
+        'SplitContainer1
+        '
+        Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer1.Location = New System.Drawing.Point(3, 3)
+        Me.SplitContainer1.Name = "SplitContainer1"
+        '
+        'SplitContainer1.Panel1
+        '
+        Me.SplitContainer1.Panel1.Controls.Add(Me.Main_Telemetry_Telemetry_ListBox)
+        '
+        'SplitContainer1.Panel2
+        '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.Main_Telemetry_Telemetry_RichTextBox)
+        Me.SplitContainer1.Size = New System.Drawing.Size(741, 250)
+        Me.SplitContainer1.SplitterDistance = 150
+        Me.SplitContainer1.TabIndex = 4
+        '
         'Main_Telemetry_Telemetry_ListBox
         '
-        Me.Main_Telemetry_Telemetry_ListBox.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.Main_Telemetry_Telemetry_ListBox.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Main_Telemetry_Telemetry_ListBox.FormattingEnabled = True
-        Me.Main_Telemetry_Telemetry_ListBox.Location = New System.Drawing.Point(6, 6)
+        Me.Main_Telemetry_Telemetry_ListBox.Location = New System.Drawing.Point(0, 0)
         Me.Main_Telemetry_Telemetry_ListBox.Name = "Main_Telemetry_Telemetry_ListBox"
-        Me.Main_Telemetry_Telemetry_ListBox.Size = New System.Drawing.Size(153, 238)
+        Me.Main_Telemetry_Telemetry_ListBox.Size = New System.Drawing.Size(150, 250)
         Me.Main_Telemetry_Telemetry_ListBox.TabIndex = 2
         '
         'Main_Telemetry_Telemetry_RichTextBox
         '
-        Me.Main_Telemetry_Telemetry_RichTextBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-            Or System.Windows.Forms.AnchorStyles.Left) _
-            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.Main_Telemetry_Telemetry_RichTextBox.Location = New System.Drawing.Point(165, 6)
+        Me.Main_Telemetry_Telemetry_RichTextBox.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Main_Telemetry_Telemetry_RichTextBox.Location = New System.Drawing.Point(0, 0)
         Me.Main_Telemetry_Telemetry_RichTextBox.Name = "Main_Telemetry_Telemetry_RichTextBox"
-        Me.Main_Telemetry_Telemetry_RichTextBox.Size = New System.Drawing.Size(576, 244)
+        Me.Main_Telemetry_Telemetry_RichTextBox.Size = New System.Drawing.Size(587, 250)
         Me.Main_Telemetry_Telemetry_RichTextBox.TabIndex = 3
         Me.Main_Telemetry_Telemetry_RichTextBox.Text = ""
         '
         'Main_Telemetry_Files_TabPage
         '
-        Me.Main_Telemetry_Files_TabPage.Controls.Add(Me.Main_Telemetry_Files_CheckBox)
         Me.Main_Telemetry_Files_TabPage.Controls.Add(Me.Main_Telemetry_Files_ListBox)
         Me.Main_Telemetry_Files_TabPage.Location = New System.Drawing.Point(4, 22)
         Me.Main_Telemetry_Files_TabPage.Name = "Main_Telemetry_Files_TabPage"
@@ -563,18 +597,6 @@ Partial Class Main
         Me.Main_Telemetry_Files_TabPage.TabIndex = 1
         Me.Main_Telemetry_Files_TabPage.Text = "Archivos"
         Me.Main_Telemetry_Files_TabPage.UseVisualStyleBackColor = True
-        '
-        'Main_Telemetry_Files_CheckBox
-        '
-        Me.Main_Telemetry_Files_CheckBox.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.Main_Telemetry_Files_CheckBox.AutoSize = True
-        Me.Main_Telemetry_Files_CheckBox.Cursor = System.Windows.Forms.Cursors.Hand
-        Me.Main_Telemetry_Files_CheckBox.Location = New System.Drawing.Point(670, 233)
-        Me.Main_Telemetry_Files_CheckBox.Name = "Main_Telemetry_Files_CheckBox"
-        Me.Main_Telemetry_Files_CheckBox.Size = New System.Drawing.Size(71, 17)
-        Me.Main_Telemetry_Files_CheckBox.TabIndex = 3
-        Me.Main_Telemetry_Files_CheckBox.Text = "Usar FTP"
-        Me.Main_Telemetry_Files_CheckBox.UseVisualStyleBackColor = True
         '
         'Main_Telemetry_Files_ListBox
         '
@@ -835,6 +857,10 @@ Partial Class Main
         Me.Main_Users_User_TabPage.ResumeLayout(False)
         Me.Main_Users_User_TabPage.PerformLayout()
         Me.Main_Users_User_GroupBox.ResumeLayout(False)
+        Me.SplitContainer2.Panel1.ResumeLayout(False)
+        Me.SplitContainer2.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer2, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer2.ResumeLayout(False)
         Me.ContextMenuStripUsers_User_ListBox1.ResumeLayout(False)
         Me.Main_Users_Command_TabPage.ResumeLayout(False)
         Me.Main_Users_Command_TabPage.PerformLayout()
@@ -842,8 +868,11 @@ Partial Class Main
         Me.Main_Telemetry_TabPage.ResumeLayout(False)
         Me.Main_Telemetry_TabControl.ResumeLayout(False)
         Me.Main_Telemetry_Telemetry_TabPage.ResumeLayout(False)
+        Me.SplitContainer1.Panel1.ResumeLayout(False)
+        Me.SplitContainer1.Panel2.ResumeLayout(False)
+        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer1.ResumeLayout(False)
         Me.Main_Telemetry_Files_TabPage.ResumeLayout(False)
-        Me.Main_Telemetry_Files_TabPage.PerformLayout()
         Me.ContextMenuStripTelemetry_Files_ListBox1.ResumeLayout(False)
         Me.Main_Inject_TabPage.ResumeLayout(False)
         Me.Main_Inject_GroupBox.ResumeLayout(False)
@@ -892,7 +921,6 @@ Partial Class Main
     Friend WithEvents Main_Telemetry_Telemetry_TabPage As TabPage
     Friend WithEvents Main_Telemetry_Files_TabPage As TabPage
     Friend WithEvents Main_Telemetry_Files_ListBox As ListBox
-    Friend WithEvents Main_Telemetry_Files_CheckBox As CheckBox
     Friend WithEvents ContextMenuStripTelemetry_Files_ListBox1 As ContextMenuStrip
     Friend WithEvents RecargarToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripMenuItem1 As ToolStripSeparator
@@ -923,4 +951,6 @@ Partial Class Main
     Friend WithEvents Main_General_BoroGet_Repositories_GroupBox As GroupBox
     Friend WithEvents Main_General_BoroGet_Repositories_RichTextBox As RichTextBox
     Friend WithEvents MyToolTip As ToolTip
+    Friend WithEvents SplitContainer1 As SplitContainer
+    Friend WithEvents SplitContainer2 As SplitContainer
 End Class

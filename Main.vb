@@ -1,4 +1,4 @@
-﻿Imports System.Net
+﻿Imports System.IO
 Imports System.Net.Http
 Public Class Main
     Dim IsThreadReadCMDServerRunning As Boolean = False
@@ -270,49 +270,49 @@ Public Class Main
     End Sub
     Private Sub Main_General_Globals_Button_Click(sender As Object, e As EventArgs) Handles Main_General_Globals_Button.Click
         Try
-            Dim LocalFilePath As String = DIRCommons & "\Globals.ini"
-            Dim RemoteFilePath As String = HostOwnerServer & "/Globals.ini"
-            If My.Computer.FileSystem.FileExists(LocalFilePath) Then
-                My.Computer.FileSystem.DeleteFile(LocalFilePath)
-            End If
-            My.Computer.FileSystem.WriteAllText(LocalFilePath, Main_General_Globals_RichTextBox.Text, False)
-            My.Computer.Network.UploadFile(LocalFilePath, RemoteFilePath, HostOwnerServerUser, HostOwnerServerPassword)
-            MsgBox("Globals aplicado.", MsgBoxStyle.Information, "Configuracion Servidor")
+            'Dim LocalFilePath As String = DIRCommons & "\Globals.ini"
+            'Dim RemoteFilePath As String = HostOwnerServer & "/Globals.ini"
+            'If My.Computer.FileSystem.FileExists(LocalFilePath) Then
+            '    My.Computer.FileSystem.DeleteFile(LocalFilePath)
+            'End If
+            'My.Computer.FileSystem.WriteAllText(LocalFilePath, Main_General_Globals_RichTextBox.Text, False)
+            'My.Computer.Network.UploadFile(LocalFilePath, RemoteFilePath, HostOwnerServerUser, HostOwnerServerPassword)
+            'MsgBox("Globals aplicado.", MsgBoxStyle.Information, "Configuracion Servidor")
         Catch ex As Exception
             Status_Label.Text = AddToLog("SendGlobalsSettings@Main", "Error: " & ex.Message, True)
         End Try
     End Sub
     Private Sub Main_General_BoroGet_Config_Button_Click(sender As Object, e As EventArgs) Handles Main_General_BoroGet_Config_Button.Click
         Try
-            Dim LocalFilePath As String = DIRCommons & "\BoroGet_config.ini"
-            Dim RemoteFilePath As String = HostOwnerServer & "/Boro-Get/config.ini"
-            If My.Computer.FileSystem.FileExists(LocalFilePath) Then
-                My.Computer.FileSystem.DeleteFile(LocalFilePath)
-            End If
-            My.Computer.FileSystem.WriteAllText(LocalFilePath, Main_General_BoroGet_Config_RichTextBox.Text, False)
-            My.Computer.Network.UploadFile(LocalFilePath, RemoteFilePath, HostOwnerServerUser, HostOwnerServerPassword)
-            MsgBox("Boro-Get Configuration aplicado.", MsgBoxStyle.Information, "Configuracion Servidor Boro-Get")
+            'Dim LocalFilePath As String = DIRCommons & "\BoroGet_config.ini"
+            'Dim RemoteFilePath As String = HostOwnerServer & "/Boro-Get/config.ini"
+            'If My.Computer.FileSystem.FileExists(LocalFilePath) Then
+            '    My.Computer.FileSystem.DeleteFile(LocalFilePath)
+            'End If
+            'My.Computer.FileSystem.WriteAllText(LocalFilePath, Main_General_BoroGet_Config_RichTextBox.Text, False)
+            'My.Computer.Network.UploadFile(LocalFilePath, RemoteFilePath, HostOwnerServerUser, HostOwnerServerPassword)
+            'MsgBox("Boro-Get Configuration aplicado.", MsgBoxStyle.Information, "Configuracion Servidor Boro-Get")
         Catch ex As Exception
             Status_Label.Text = AddToLog("SendBoroGet(config)Settings@Main", "Error: " & ex.Message, True)
         End Try
     End Sub
     Private Sub Main_General_BoroGet_Repositories_Button_Click(sender As Object, e As EventArgs) Handles Main_General_BoroGet_Repositories_Button.Click
         Try
-            Dim LocalFilePath As String = DIRCommons & "\BoroGet_Repositories.ini"
-            Dim RemoteFilePath As String = HostOwnerServer & "/Boro-Get/Repositories.ini"
-            If My.Computer.FileSystem.FileExists(LocalFilePath) Then
-                My.Computer.FileSystem.DeleteFile(LocalFilePath)
-            End If
-            My.Computer.FileSystem.WriteAllText(LocalFilePath, Main_General_BoroGet_Repositories_RichTextBox.Text, False)
-            My.Computer.Network.UploadFile(LocalFilePath, RemoteFilePath, HostOwnerServerUser, HostOwnerServerPassword)
-            MsgBox("Boro-Get Repositories aplicado.", MsgBoxStyle.Information, "Configuracion Servidor Boro-Get")
+            'Dim LocalFilePath As String = DIRCommons & "\BoroGet_Repositories.ini"
+            'Dim RemoteFilePath As String = HostOwnerServer & "/Boro-Get/Repositories.ini"
+            'If My.Computer.FileSystem.FileExists(LocalFilePath) Then
+            '    My.Computer.FileSystem.DeleteFile(LocalFilePath)
+            'End If
+            'My.Computer.FileSystem.WriteAllText(LocalFilePath, Main_General_BoroGet_Repositories_RichTextBox.Text, False)
+            'My.Computer.Network.UploadFile(LocalFilePath, RemoteFilePath, HostOwnerServerUser, HostOwnerServerPassword)
+            'MsgBox("Boro-Get Repositories aplicado.", MsgBoxStyle.Information, "Configuracion Servidor Boro-Get")
         Catch ex As Exception
             Status_Label.Text = AddToLog("SendBoroGet(Repositories)Settings@Main", "Error: " & ex.Message, True)
         End Try
     End Sub
 
 #Region "LocalThings"
-    Sub IndexUsersToPanel()
+    Async Sub IndexUsersToPanel()
         Try
             Main_Users_User_ListBox.Items.Clear()
             Status_Label.Text = "WAIT: Loading user files from server..."
@@ -322,11 +322,11 @@ Public Class Main
             Using client As New HttpClient()
                 client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
 
-                Dim response As HttpResponseMessage = client.GetAsync(
+                Dim response As HttpResponseMessage = Await client.GetAsync(
                     HttpOwnerServer & "/control/list/instances"
-                ).Result
+                )
 
-                Dim respuestaTexto As String = response.Content.ReadAsStringAsync().Result
+                Dim respuestaTexto As String = Await response.Content.ReadAsStringAsync()
 
                 If response.IsSuccessStatusCode Then
                     instancias = respuestaTexto
@@ -343,7 +343,7 @@ Public Class Main
             Status_Label.Text = AddToLog("IndexUsersToPanel@(LocalThings@Main)Network", "Error: " & ex.Message, True)
         End Try
     End Sub
-    Sub IndexTelemetryToPanel()
+    Async Sub IndexTelemetryToPanel()
         Try
             Main_Telemetry_Telemetry_ListBox.Items.Clear()
             Status_Label.Text = "WAIT: Loading telemetry files from server..."
@@ -353,11 +353,11 @@ Public Class Main
             Using client As New HttpClient()
                 client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
 
-                Dim response As HttpResponseMessage = client.GetAsync(
+                Dim response As HttpResponseMessage = Await client.GetAsync(
                     HttpOwnerServer & "/control/list/telemetry-logs"
-                ).Result
+                )
 
-                Dim respuestaTexto As String = response.Content.ReadAsStringAsync().Result
+                Dim respuestaTexto As String = Await response.Content.ReadAsStringAsync()
 
                 If response.IsSuccessStatusCode Then
                     registros = respuestaTexto
@@ -374,7 +374,7 @@ Public Class Main
             Status_Label.Text = AddToLog("IndexTelemetryToPanel@(LocalThings@Main)Network", "Error: " & ex.Message, True)
         End Try
     End Sub
-    Sub IndexTelemetryFilesToPanel()
+    Async Sub IndexTelemetryFilesToPanel()
         Try
             Main_Telemetry_Files_ListBox.Items.Clear()
             Status_Label.Text = "WAIT: Loading repository files from server..."
@@ -384,11 +384,11 @@ Public Class Main
             Using client As New HttpClient()
                 client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
 
-                Dim response As HttpResponseMessage = client.GetAsync(
+                Dim response As HttpResponseMessage = Await client.GetAsync(
                     HttpOwnerServer & "/control/list/telemetry-files"
-                ).Result
+                )
 
-                Dim respuestaTexto As String = response.Content.ReadAsStringAsync().Result
+                Dim respuestaTexto As String = Await response.Content.ReadAsStringAsync()
 
                 If response.IsSuccessStatusCode Then
                     archivos = respuestaTexto
@@ -409,66 +409,66 @@ Public Class Main
     Sub DeleteTelemetryFile(ByVal fileName As String)
         Try
             ' TODO
-            Dim request As FtpWebRequest = CType(WebRequest.Create(HostOwnerServer & "/Files/" & fileName), FtpWebRequest)
-            request.Method = WebRequestMethods.Ftp.DeleteFile
-            request.Credentials = New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
-            Dim response As FtpWebResponse = CType(request.GetResponse(), FtpWebResponse)
-            Status_Label.Text = CType(response, FtpWebResponse).StatusDescription
-            response.Close()
+            'Dim request As FtpWebRequest = CType(WebRequest.Create(HostOwnerServer & "/Files/" & fileName), FtpWebRequest)
+            'request.Method = WebRequestMethods.Ftp.DeleteFile
+            'request.Credentials = New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
+            'Dim response As FtpWebResponse = CType(request.GetResponse(), FtpWebResponse)
+            'Status_Label.Text = CType(response, FtpWebResponse).StatusDescription
+            'response.Close()
         Catch ex As Exception
             Status_Label.Text = AddToLog("DeleteTelemetryFile@(LocalThings@Main)Network", "Error: " & ex.Message, True)
         End Try
     End Sub
     Sub DeleteUserFile(ByVal user As String)
-        user = user.Replace("userID_", Nothing)
-        Try
-            ' TODO
-            Try
-                Dim request As FtpWebRequest = CType(WebRequest.Create(HostOwnerServer & "/Users/userID_" & user & ".rtp"), FtpWebRequest)
-                request.Method = WebRequestMethods.Ftp.DeleteFile
-                request.Credentials = New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
-                Dim response As FtpWebResponse = CType(request.GetResponse(), FtpWebResponse)
-                Status_Label.Text = CType(response, FtpWebResponse).StatusDescription
-                response.Close()
-            Catch ex As Exception
-                Status_Label.Text = AddToLog("DeleteUserFile(UserFile)@(LocalThings@Main)Network", "Error: " & ex.Message, True)
-            End Try
-            Try
-                Dim request As FtpWebRequest = CType(WebRequest.Create(HostOwnerServer & "/Users/Commands/[" & user & "]Command.str"), FtpWebRequest)
-                request.Method = WebRequestMethods.Ftp.DeleteFile
-                request.Credentials = New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
-                Dim response As FtpWebResponse = CType(request.GetResponse(), FtpWebResponse)
-                Status_Label.Text = CType(response, FtpWebResponse).StatusDescription
-                response.Close()
-            Catch ex As Exception
-                Status_Label.Text = AddToLog("DeleteUserFile(CommandFile)@(LocalThings@Main)Network", "Error: " & ex.Message, True)
-            End Try
-            Try
-                Dim request As FtpWebRequest = CType(WebRequest.Create(HostOwnerServer & "/Telemetry/telemetry_" & user & ".tlm"), FtpWebRequest)
-                request.Method = WebRequestMethods.Ftp.DeleteFile
-                request.Credentials = New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
-                Dim response As FtpWebResponse = CType(request.GetResponse(), FtpWebResponse)
-                Status_Label.Text = CType(response, FtpWebResponse).StatusDescription
-                response.Close()
-            Catch ex As Exception
-                Status_Label.Text = AddToLog("DeleteUserFile(TelemetryFile)@(LocalThings@Main)Network", "Error: " & ex.Message, True)
-            End Try
-        Catch ex As Exception
-            Status_Label.Text = AddToLog("DeleteUserFile@(LocalThings@Main)Network", "Error: " & ex.Message, True)
-        End Try
+        'user = user.Replace("userID_", Nothing)
+        'Try
+        '    ' TODO
+        '    Try
+        '        Dim request As FtpWebRequest = CType(WebRequest.Create(HostOwnerServer & "/Users/userID_" & user & ".rtp"), FtpWebRequest)
+        '        request.Method = WebRequestMethods.Ftp.DeleteFile
+        '        request.Credentials = New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
+        '        Dim response As FtpWebResponse = CType(request.GetResponse(), FtpWebResponse)
+        '        Status_Label.Text = CType(response, FtpWebResponse).StatusDescription
+        '        response.Close()
+        '    Catch ex As Exception
+        '        Status_Label.Text = AddToLog("DeleteUserFile(UserFile)@(LocalThings@Main)Network", "Error: " & ex.Message, True)
+        '    End Try
+        '    Try
+        '        Dim request As FtpWebRequest = CType(WebRequest.Create(HostOwnerServer & "/Users/Commands/[" & user & "]Command.str"), FtpWebRequest)
+        '        request.Method = WebRequestMethods.Ftp.DeleteFile
+        '        request.Credentials = New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
+        '        Dim response As FtpWebResponse = CType(request.GetResponse(), FtpWebResponse)
+        '        Status_Label.Text = CType(response, FtpWebResponse).StatusDescription
+        '        response.Close()
+        '    Catch ex As Exception
+        '        Status_Label.Text = AddToLog("DeleteUserFile(CommandFile)@(LocalThings@Main)Network", "Error: " & ex.Message, True)
+        '    End Try
+        '    Try
+        '        Dim request As FtpWebRequest = CType(WebRequest.Create(HostOwnerServer & "/Telemetry/telemetry_" & user & ".tlm"), FtpWebRequest)
+        '        request.Method = WebRequestMethods.Ftp.DeleteFile
+        '        request.Credentials = New NetworkCredential(HostOwnerServerUser, HostOwnerServerPassword)
+        '        Dim response As FtpWebResponse = CType(request.GetResponse(), FtpWebResponse)
+        '        Status_Label.Text = CType(response, FtpWebResponse).StatusDescription
+        '        response.Close()
+        '    Catch ex As Exception
+        '        Status_Label.Text = AddToLog("DeleteUserFile(TelemetryFile)@(LocalThings@Main)Network", "Error: " & ex.Message, True)
+        '    End Try
+        'Catch ex As Exception
+        '    Status_Label.Text = AddToLog("DeleteUserFile@(LocalThings@Main)Network", "Error: " & ex.Message, True)
+        'End Try
     End Sub
-    Sub GetTelemetryInfo(ByVal fileName As String)
+    Async Sub GetTelemetryInfo(ByVal fileName As String)
         Try
             Dim registros As String = Nothing
 
             Using client As New HttpClient()
                 client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
 
-                Dim response As HttpResponseMessage = client.GetAsync(
+                Dim response As HttpResponseMessage = Await client.GetAsync(
                     HttpOwnerServer & "/control/get/telemetry-log/" & fileName.Replace(".log", "")
-                ).Result
+                )
 
-                Dim respuestaTexto As String = response.Content.ReadAsStringAsync().Result
+                Dim respuestaTexto As String = Await response.Content.ReadAsStringAsync()
 
                 If response.IsSuccessStatusCode Then
                     registros = respuestaTexto
@@ -480,9 +480,8 @@ Public Class Main
             Status_Label.Text = AddToLog("GetTelemetryInfo@(LocalThings@Main)Network", "Error: " & ex.Message, True)
         End Try
     End Sub
-    Sub GetTelemetryFile(ByVal file As String)
+    Async Sub GetTelemetryFile(ByVal file As String)
         Try
-            ' TODO : descargar archivo
             Dim downloadRefresh As Boolean = False
             Status_Label.Text = "WAIT: Asking file info..."
 
@@ -498,12 +497,25 @@ Public Class Main
                     downloadRefresh = True
                 End If
             End If
+
             If Not downloadRefresh Then
-                If Main_Telemetry_Files_CheckBox.Checked Then
-                    My.Computer.Network.DownloadFile(HostOwnerServer & "/Files/" & file, LocalTelemetryFile, HostOwnerServerUser, HostOwnerServerPassword)
-                Else
-                    My.Computer.Network.DownloadFile(RemoteTelemetryFile, LocalTelemetryFile)
-                End If
+                Using client As New HttpClient()
+                    Dim response As HttpResponseMessage = Await client.GetAsync(
+                        HttpOwnerServer & "/control/get/telemetry-file/" & file
+                    )
+
+                    If Not response.IsSuccessStatusCode Then
+                        Status_Label.Text = "File download failed."
+                        Return
+                    End If
+
+                    Using inputStream = Await response.Content.ReadAsStreamAsync()
+                        Using outputStream As New FileStream(LocalTelemetryFile, FileMode.Create)
+                            inputStream.CopyTo(outputStream)
+                        End Using
+                    End Using
+
+                End Using
             End If
 
             Status_Label.Text = "File ready! Asking for confirmation..."
@@ -517,18 +529,18 @@ Public Class Main
             Status_Label.Text = AddToLog("GetTelemetryFile@(LocalThings@Main)Network", "Error: " & ex.Message, True)
         End Try
     End Sub
-    Sub GetUserInfo()
+    Async Sub GetUserInfo()
         Try
             Dim reporte As String = Nothing
 
             Using client As New HttpClient()
                 client.DefaultRequestHeaders.Add("User-Agent", AssemblyInformation)
 
-                Dim response As HttpResponseMessage = client.GetAsync(
+                Dim response As HttpResponseMessage = Await client.GetAsync(
                     HttpOwnerServer & "/control/get/report/" & userIDTarget
-                ).Result
+                )
 
-                Dim respuestaTexto As String = response.Content.ReadAsStringAsync().Result
+                Dim respuestaTexto As String = Await response.Content.ReadAsStringAsync()
 
                 If response.IsSuccessStatusCode Then
                     reporte = respuestaTexto

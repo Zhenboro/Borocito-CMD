@@ -11,9 +11,6 @@ Module GlobalUses
     Public AssemblyInformation As String = "Borocito-CMD " & My.Application.Info.Version.ToString & " (" & Application.ProductVersion & ")"
 
     Public HttpOwnerServer As String
-    Public HostOwnerServer As String
-    Public HostOwnerServerUser As String
-    Public HostOwnerServerPassword As String
 
     Public userTarget As String
     Public userIDTarget As String
@@ -103,18 +100,6 @@ Module Settings
                     OwnerServer = OwnerServerInput.Replace(httpPrefix, Nothing)
                     HttpOwnerServer = OwnerServerInput
                 End If
-                Dim HostOwnerServerInput = InputBox("Ingrese la direccion host del servidor", "Servidor", "ftp://" & OwnerServerInput)
-                If HostOwnerServerInput <> Nothing Then
-                    HostOwnerServer = HostOwnerServerInput
-                End If
-                Dim HostOwnerServerUserInput = InputBox("Ingrese el usuario del servidor", "Servidor")
-                If HostOwnerServerUserInput <> Nothing Then
-                    HostOwnerServerUser = HostOwnerServerUserInput
-                End If
-                Dim HostOwnerServerPasswordInput = InputBox("Ingrese la contraseña del servidor", "Servidor")
-                If HostOwnerServerPasswordInput <> Nothing Then
-                    HostOwnerServerPassword = HostOwnerServerPasswordInput
-                End If
             End If
         Catch ex As Exception
             Main.Status_Label.Text = AddToLog("SetData@Settings", "Error: " & ex.Message, True)
@@ -125,9 +110,6 @@ Module Settings
             If Not isPortable Then
                 OwnerServer = regKey.GetValue("OwnerServer")
                 HttpOwnerServer = regKey.GetValue("HttpOwnerServer")
-                HostOwnerServer = regKey.GetValue("HostOwnerServer")
-                HostOwnerServerUser = regKey.GetValue("HostOwnerServerUser")
-                HostOwnerServerPassword = regKey.GetValue("HostOwnerServerPassword")
                 isThemeActive = regKey.GetValue("isThemeActive")
                 CommandRefreshDelay = regKey.GetValue("CommandRefreshDelay")
             Else
@@ -142,9 +124,6 @@ Module Settings
             If Not isPortable Then
                 regKey.SetValue("OwnerServer", OwnerServer, RegistryValueKind.String)
                 regKey.SetValue("HttpOwnerServer", HttpOwnerServer, RegistryValueKind.String)
-                regKey.SetValue("HostOwnerServer", HostOwnerServer, RegistryValueKind.String)
-                regKey.SetValue("HostOwnerServerUser", HostOwnerServerUser, RegistryValueKind.String)
-                regKey.SetValue("HostOwnerServerPassword", HostOwnerServerPassword, RegistryValueKind.String)
                 regKey.SetValue("isThemeActive", isThemeActive, RegistryValueKind.String)
                 regKey.SetValue("CommandRefreshDelay", CommandRefreshDelay, RegistryValueKind.String)
             End If
@@ -158,9 +137,7 @@ Module Settings
             Dim configFile As String = Application.StartupPath & "\" & My.Application.Info.AssemblyName & ".ini"
             OwnerServer = GetIniValue("SERVER", "OwnerServer", configFile)
             HttpOwnerServer = GetIniValue("SERVER", "HttpOwnerServer", configFile)
-            HostOwnerServer = GetIniValue("SERVER", "HostOwnerServer", configFile)
-            HostOwnerServerUser = GetIniValue("SERVER", "HostOwnerServerUser", configFile)
-            HostOwnerServerPassword = GetIniValue("SERVER", "HostOwnerServerPassword", configFile)
+
             isThemeActive = GetIniValue("SERVER", "isThemeActive", configFile)
             CommandRefreshDelay = GetIniValue("SERVER", "CommandRefreshDelay", configFile)
 
@@ -205,7 +182,7 @@ Module StartUp
             GetBoroGetConfig()
             'Aplicando variables
             Main.Connected_Label.Text = "Conectado a: " & OwnerServer
-            Main.Version_Label.Text = My.Application.Info.AssemblyName & " v" & My.Application.Info.Version.ToString & " for " & GetIniValue("Assembly", "Name", DIRCommons & "\Globals.ini") & " v" & My.Application.Info.Version.ToString & " (" & GetIniValue("Assembly", "Version", DIRCommons & "\Globals.ini") & ")"
+            Main.Version_Label.Text = My.Application.Info.AssemblyName & " v" & My.Application.Info.Version.ToString & "  for  " & GetIniValue("Assembly", "Name", DIRCommons & "\Globals.ini") & " (>=) v" & My.Application.Info.Version.ToString & " (" & GetIniValue("Assembly", "Version", DIRCommons & "\Globals.ini") & ")"
             Main.Main_Inject_TextBox.Text = HttpOwnerServer
             Main.Busy_Panel.Visible = False
         Catch ex As Exception
@@ -267,40 +244,40 @@ Module Network
     End Enum
     Sub GetGlobalsConfig()
         Try
-            Dim LocalFilePath As String = DIRCommons & "\Globals.ini"
-            Dim RemoteFilePath As String = HttpOwnerServer & "/Globals.ini"
-            If My.Computer.FileSystem.FileExists(LocalFilePath) Then
-                My.Computer.FileSystem.DeleteFile(LocalFilePath)
-            End If
-            My.Computer.Network.DownloadFile(RemoteFilePath, LocalFilePath)
-            Main.Main_General_Globals_RichTextBox.Text = My.Computer.FileSystem.ReadAllText(LocalFilePath)
+            'Dim LocalFilePath As String = DIRCommons & "\Globals.ini"
+            'Dim RemoteFilePath As String = HttpOwnerServer & "/Globals.ini"
+            'If My.Computer.FileSystem.FileExists(LocalFilePath) Then
+            '    My.Computer.FileSystem.DeleteFile(LocalFilePath)
+            'End If
+            'My.Computer.Network.DownloadFile(RemoteFilePath, LocalFilePath)
+            'Main.Main_General_Globals_RichTextBox.Text = My.Computer.FileSystem.ReadAllText(LocalFilePath)
         Catch ex As Exception
             Main.Status_Label.Text = AddToLog("GetGlobalsConfig@Network", "Error: " & ex.Message, True)
         End Try
     End Sub
     Sub GetBoroGetConfig()
-        Try
-            Dim LocalFilePath As String = DIRCommons & "\BoroGet_config.ini"
-            Dim RemoteFilePath As String = HttpOwnerServer & "/Boro-Get/config.ini"
-            If My.Computer.FileSystem.FileExists(LocalFilePath) Then
-                My.Computer.FileSystem.DeleteFile(LocalFilePath)
-            End If
-            My.Computer.Network.DownloadFile(RemoteFilePath, LocalFilePath)
-            Main.Main_General_BoroGet_Config_RichTextBox.Text = My.Computer.FileSystem.ReadAllText(LocalFilePath)
-        Catch ex As Exception
-            Main.Status_Label.Text = AddToLog("GetBoroGetConfig(config)@Network", "Error: " & ex.Message, True)
-        End Try
-        Try
-            Dim LocalFilePath As String = DIRCommons & "\BoroGet_Repositories.ini"
-            Dim RemoteFilePath As String = HttpOwnerServer & "/Boro-Get/Repositories.ini"
-            If My.Computer.FileSystem.FileExists(LocalFilePath) Then
-                My.Computer.FileSystem.DeleteFile(LocalFilePath)
-            End If
-            My.Computer.Network.DownloadFile(RemoteFilePath, LocalFilePath)
-            Main.Main_General_BoroGet_Repositories_RichTextBox.Text = My.Computer.FileSystem.ReadAllText(LocalFilePath)
-        Catch ex As Exception
-            Main.Status_Label.Text = AddToLog("GetBoroGetConfig(Repositories)@Network", "Error: " & ex.Message, True)
-        End Try
+        'Try
+        '    Dim LocalFilePath As String = DIRCommons & "\BoroGet_config.ini"
+        '    Dim RemoteFilePath As String = HttpOwnerServer & "/Boro-Get/config.ini"
+        '    If My.Computer.FileSystem.FileExists(LocalFilePath) Then
+        '        My.Computer.FileSystem.DeleteFile(LocalFilePath)
+        '    End If
+        '    My.Computer.Network.DownloadFile(RemoteFilePath, LocalFilePath)
+        '    Main.Main_General_BoroGet_Config_RichTextBox.Text = My.Computer.FileSystem.ReadAllText(LocalFilePath)
+        'Catch ex As Exception
+        '    Main.Status_Label.Text = AddToLog("GetBoroGetConfig(config)@Network", "Error: " & ex.Message, True)
+        'End Try
+        'Try
+        '    Dim LocalFilePath As String = DIRCommons & "\BoroGet_Repositories.ini"
+        '    Dim RemoteFilePath As String = HttpOwnerServer & "/Boro-Get/Repositories.ini"
+        '    If My.Computer.FileSystem.FileExists(LocalFilePath) Then
+        '        My.Computer.FileSystem.DeleteFile(LocalFilePath)
+        '    End If
+        '    My.Computer.Network.DownloadFile(RemoteFilePath, LocalFilePath)
+        '    Main.Main_General_BoroGet_Repositories_RichTextBox.Text = My.Computer.FileSystem.ReadAllText(LocalFilePath)
+        'Catch ex As Exception
+        '    Main.Status_Label.Text = AddToLog("GetBoroGetConfig(Repositories)@Network", "Error: " & ex.Message, True)
+        'End Try
     End Sub
 
     Function SendAPIRequest(ByVal clase As API_TYPES, ByVal UID As String, ByVal content As String) As Boolean
