@@ -29,3 +29,7 @@ If not, you have failed to configure CMD. You can modify the values by going to 
 ```
 HKEY_CURRENT_USER\SOFTWARE\Borocito\Control
 ```
+
+## TODO
+Ha pasado un largo tiempo, y me sorprende lo que he creado. Pero ahora estoy viejo, y no entiendo como logre tal nivel de perfeccion.  
+Lo que quiero decir es que, demorare un tiempo en adaptar el funcionamiento para Borocito 0.3.0.0  

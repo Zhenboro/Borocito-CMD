@@ -195,18 +195,19 @@ Public Class Main
                 End Using
 
                 Dim respuesta As String() = Split(respuestas, vbCrLf)
-                Dim contenido As String = String.Join(vbNewLine, respuesta, 1, respuesta.Length - 1).Replace(vbCrLf, "")
+                Dim contenido As String = String.Join(vbNewLine, respuesta.Skip(1))
+                Dim device As String() = respuestas.Split(vbCrLf)(0).Split("|")
                 'Leer
                 If respuestas = LastUserResponse Then
                     If respuestas <> Nothing Then
-                        SetCMDStatus(Nothing, "The response (" & contenido & ") is equal to last", False)
+                        SetCMDStatus(Nothing, "The response (" & device(3) & ") is equal to last", False)
                     Else
                         SetCMDStatus(Nothing, "No changes", False)
                     End If
                 Else
                     LastUserResponse = respuestas
                     If LastUserResponse <> Nothing Or LastUserResponse <> contenido Then
-                        SetCMDStatus(vbCrLf & respuestas.Split(vbCrLf)(0).Split("|")(1) & ": " & contenido & vbCrLf, Nothing)
+                        SetCMDStatus(vbCrLf & device(1) & ": " & contenido & vbCrLf, Nothing)
                     End If
                 End If
             Catch ex As Exception

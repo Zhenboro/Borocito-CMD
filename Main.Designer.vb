@@ -838,7 +838,6 @@ Partial Class Main
         Me.KeyPreview = True
         Me.MinimumSize = New System.Drawing.Size(815, 510)
         Me.Name = "Main"
-        Me.ShowIcon = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Main_TabControl.ResumeLayout(False)
         Me.Main_General_TabPage.ResumeLayout(False)
