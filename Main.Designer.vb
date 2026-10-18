@@ -912,7 +912,7 @@ Partial Class Main
     Friend WithEvents Main_Inject_Label As Label
     Friend WithEvents Main_Inject_Button As Button
     Friend WithEvents Main_Users_Command_ComboBox As ComboBox
-    Friend WithEvents LoaderTimer As Timer
+    Friend WithEvents LoaderTimer As Windows.Forms.Timer
     Friend WithEvents Busy_Label As Label
     Friend WithEvents Busy_Panel As Panel
     Friend WithEvents Main_General_TabControl As TabControl
